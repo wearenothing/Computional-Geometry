@@ -22,7 +22,9 @@ class Point
 		int getY() const{
 		return y;
 		}
+		int id;
 	private: 
+	
 	int x,y;
 } ;
 //比较Point 的大小 
@@ -53,28 +55,56 @@ int main()
 		int x,y;
 		cin>>x>>y;
 		P[i]=Point(x,y);
+		P[i].id=i+1;
 	}
 	
 	//Sorting
 	sort(P.begin(),P.end(),cmp_point);
 	
 	//upper hull
-	vector<Point> upper_hull(2);
-	upper_hull[0]=P[0];
-	upper_hull[1]=P[1];
+	vector<int> up_hull(2);
+	up_hull[0]=0;
+	up_hull[1]=1;
+
 	for(int i=2;i<n;i++)
 	{
-		upper_hull.push_back(P[i]);
-		while(upper_hull.size()>=3&&!isRightTurn(upper_hull[i-2],upper_hull[i-1],upper_hull[i]))
+		up_hull.push_back(i);
+		//取uphull最后面三个点 
+		while(up_hull.size()>=3&&!isRightTurn(P[up_hull[up_hull.size()-3]],P[up_hull[up_hull.size()-2]],P[up_hull[up_hull.size()-1]]))
 		{
-			vector<Point>::iterator iter=upper_hull.end();
-			iter--;
-		 	upper_hull.erase(iter);
+			vector<int>::iterator iter=up_hull.end();
+			up_hull.erase(iter-2); //输出倒数第二个元素 	
 		}
-		
 	}
-	
+	/*for(int i=0;i<up_hull.size();i++)
+		cout<<P[up_hull[i]].id<<" ";
+	cout<<endl;*/
 	//lower hull
 	
+	vector<int> low_hull(2);
+	low_hull[0]=n-1;
+	low_hull[1]=n-2;
+
+	for(int i=n-3;i>=0;i--)
+	{
+		low_hull.push_back(i);
+		//取uphull最后面三个点 
+		while(low_hull.size()>=3&&!isRightTurn(P[low_hull[low_hull.size()-3]],P[low_hull[low_hull.size()-2]],P[low_hull[low_hull.size()-1]]))
+		{
+			vector<int>::iterator iter=low_hull.end();
+			low_hull.erase(iter-2); //输出倒数第二个元素 	
+		}
+	}
+	/*for(int i=0;i<low_hull.size();i++)
+			cout<<P[low_hull[i]].id<<" ";
+			cout<<endl;*/
+	int h=low_hull.size()+up_hull.size()-2;
+	long mult1=1;
+	long mult2=1;
+	for(int i=0;i<up_hull.size();i++)
+		mult1*=P[up_hull[i]].id;
+	for(int i=1;i<low_hull.size()-1;i++)
+			mult2*=P[low_hull[i]].id;
+	cout<<(mult1*mult2*h)%(n+1);
 	return 0;
 }
